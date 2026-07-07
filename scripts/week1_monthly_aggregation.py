@@ -29,11 +29,6 @@ LISTING_PATTERN = "CRMLSListing*.csv"
 
 
 def load_and_concat_files(file_pattern, dataset_name):
-    """
-    Finds all monthly CSV files matching the file pattern,
-    loads them with pandas, and concatenates them into one dataset.
-    """
-
     files = sorted(RAW_DATA_DIR.glob(file_pattern))
 
     if not files:
@@ -69,10 +64,6 @@ def load_and_concat_files(file_pattern, dataset_name):
 
 
 def filter_residential(df, dataset_name):
-    """
-    Filters the combined dataset to Residential properties only.
-    """
-
     if "PropertyType" not in df.columns:
         raise KeyError(f"PropertyType column not found in {dataset_name} dataset.")
 
