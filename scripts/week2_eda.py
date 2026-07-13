@@ -1,9 +1,6 @@
 import sys
 from pathlib import Path
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import pandas as pd
 
 # Week 2-3 - Foundational EDA on the combined Sold dataset.
@@ -140,25 +137,6 @@ def numeric_distribution_summary(df, columns):
     return pd.DataFrame.from_dict(rows, orient="index")
 
 
-def save_distribution_plots(df, columns, plots_dir):
-    plots_dir.mkdir(parents=True, exist_ok=True)
-
-    for column in columns:
-        series = pd.to_numeric(df[column], errors="coerce").dropna()
-
-        fig, ax = plt.subplots()
-        ax.hist(series, bins=50)
-        ax.set_title(f"{column} - Histogram")
-        fig.savefig(plots_dir / f"{column}_hist.png")
-        plt.close(fig)
-
-        fig, ax = plt.subplots()
-        ax.boxplot(series, vert=False)
-        ax.set_title(f"{column} - Boxplot")
-        fig.savefig(plots_dir / f"{column}_box.png")
-        plt.close(fig)
-
-
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -194,10 +172,6 @@ def main():
     distribution_path = OUTPUT_DIR / "numeric_distribution_summary.csv"
     distribution_summary.to_csv(distribution_path)
     print(f"\nSaved numeric distribution summary: {distribution_path}")
-
-    plots_dir = OUTPUT_DIR / "plots"
-    save_distribution_plots(sold_residential, NUMERIC_FIELDS, plots_dir)
-    print(f"\nSaved distribution plots to: {plots_dir}")
 
 
 if __name__ == "__main__":
