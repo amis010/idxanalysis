@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 import pandas as pd
 
@@ -28,13 +29,52 @@ SOLD_PATTERN = "CRMLSSold*.csv"
 LISTING_PATTERN = "CRMLSListing*.csv"
 
 
-def load_and_concat_files(file_pattern, dataset_name):
-    files = sorted(RAW_DATA_DIR.glob(file_pattern))
+FILENAME_PATTERN = re.compile(r"^(?P<prefix>.+?)(?P<month>\d{6})(?P<filled>_filled)?\.csv$")
 
-    if not files:
+
+def select_one_file_per_month(files):
+    """Some months have both a plain export and a "_filled" export (same
+    listings, with latfilled/lonfilled coordinate backfill added). Loading
+    both double-counts that month's rows, so this keeps only one file per
+    (prefix, month) - preferring the _filled version when both exist, since
+    it is a superset of the plain export's columns."""
+    grouped = {}
+
+    for file in files:
+        match = FILENAME_PATTERN.match(file.name)
+        if not match:
+            raise ValueError(f"Unexpected file name pattern: {file.name}")
+
+        key = (match.group("prefix"), match.group("month"))
+        grouped.setdefault(key, []).append((file, bool(match.group("filled"))))
+
+    selected, skipped = [], []
+
+    for candidates in grouped.values():
+        filled_candidates = [f for f, is_filled in candidates if is_filled]
+        chosen = filled_candidates[0] if filled_candidates else candidates[0][0]
+
+        selected.append(chosen)
+        skipped.extend(f for f, _ in candidates if f != chosen)
+
+    return sorted(selected), sorted(skipped)
+
+
+def load_and_concat_files(file_pattern, dataset_name):
+    all_files = sorted(RAW_DATA_DIR.glob(file_pattern))
+
+    if not all_files:
         raise FileNotFoundError(
             f"No {dataset_name} files found in {RAW_DATA_DIR}."
         )
+
+    files, skipped_files = select_one_file_per_month(all_files)
+
+    if skipped_files:
+        print(f"\n{dataset_name}: skipping {len(skipped_files)} duplicate monthly "
+              f"file(s) in favor of their _filled counterpart:")
+        for file in skipped_files:
+            print(f" - {file.name}")
 
     dataframes = []
     total_rows_before_concat = 0
@@ -59,6 +99,14 @@ def load_and_concat_files(file_pattern, dataset_name):
     # Row count confirmation before and after concatenation.
     print(f"\n{dataset_name} rows before concatenation: {total_rows_before_concat:,}")
     print(f"{dataset_name} rows after concatenation: {len(combined_df):,}")
+
+    if "ListingKey" in combined_df.columns:
+        duplicate_count = combined_df["ListingKey"].duplicated().sum()
+        if duplicate_count > 0:
+            print(f"{dataset_name}: dropping {duplicate_count:,} duplicate row(s) "
+                  f"with a repeated ListingKey (keeping first occurrence).")
+            combined_df = combined_df.drop_duplicates(subset="ListingKey", keep="first")
+            print(f"{dataset_name} rows after de-duplication: {len(combined_df):,}")
 
     return combined_df
 
