@@ -21,7 +21,7 @@ from week1_monthly_aggregation import (
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = PROJECT_ROOT / "outputs" / "eda"
+OUTPUT_DIR = PROJECT_ROOT / "outputs" / "week2_eda"
 PLOTS_DIR = OUTPUT_DIR / "plots"
 
 HIGH_MISSING_THRESHOLD = 90.0

@@ -14,8 +14,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from week2_eda import CORE_FIELDS, NUMERIC_FIELDS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-ENRICHED_DIR = PROJECT_ROOT / "outputs" / "enriched"
-OUTPUT_DIR = PROJECT_ROOT / "outputs" / "cleaned"
+ENRICHED_DIR = PROJECT_ROOT / "outputs" / "week3_enriched"
+OUTPUT_DIR = PROJECT_ROOT / "outputs" / "week4_5_cleaned"
 
 HIGH_MISSING_THRESHOLD = 90.0
 

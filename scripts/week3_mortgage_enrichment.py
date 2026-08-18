@@ -21,7 +21,7 @@ from week1_monthly_aggregation import (
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-OUTPUT_DIR = PROJECT_ROOT / "outputs" / "enriched"
+OUTPUT_DIR = PROJECT_ROOT / "outputs" / "week3_enriched"
 
 FRED_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id=MORTGAGE30US"
 

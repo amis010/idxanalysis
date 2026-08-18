@@ -19,8 +19,8 @@ from shapely.strtree import STRtree
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-CLEANED_DIR = PROJECT_ROOT / "outputs" / "cleaned"
-OUTPUT_DIR = PROJECT_ROOT / "outputs" / "features"
+CLEANED_DIR = PROJECT_ROOT / "outputs" / "week4_5_cleaned"
+OUTPUT_DIR = PROJECT_ROOT / "outputs" / "week6_features"
 
 SCHOOL_DISTRICT_GEOJSON_URL = (
     "https://hub.arcgis.com/api/v3/datasets/b0e3b936426a47ce9d9a2e77e2bb86cc_0/downloads/data"
